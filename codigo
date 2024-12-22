@@ -1,0 +1,130 @@
+import SwiftUI
+
+struct contentView: View {
+    @State private var saldo: Double = 0.0
+    @State private var deposito: String = ""
+    @State private var saque: String = ""
+    @State private var mostrarSaldo: Bool = false
+    @State private var sairApp: Bool = false
+    
+ 
+    func valorValido(valor: String) -> Double {
+        if let valorConvertido = Double(valor), valorConvertido > 0 {
+            return valorConvertido
+        }
+        return 0.0
+    }
+
+    var body: some View {
+        VStack {
+           
+            Text("Banco Simples")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .padding()
+
+        
+            TextField("Digite o valor para depositar", text: $deposito)
+                .keyboardType(.decimalPad)
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+                .padding(.horizontal)
+
+            Button(action: {
+               
+                let valorDeposito = valorValido(valor: deposito)
+                if valorDeposito > 0 {
+                    saldo += valorDeposito
+                    deposito = "" //
+                }
+            }) {
+                Text("Depositar")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                    .padding(.horizontal)
+            }
+
+           
+            TextField("Digite o valor para sacar", text: $saque)
+                .keyboardType(.decimalPad)
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+                .padding(.horizontal)
+
+            Button(action: {
+                
+                let valorSaque = valorValido(valor: saque)
+                if valorSaque > 0 && valorSaque <= saldo {
+                    saldo -= valorSaque
+                    saque = ""
+                }
+            }) {
+                Text("Sacar")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.red)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                    .padding(.horizontal)
+            }
+
+       
+            Button(action: {
+                mostrarSaldo.toggle()
+            }) {
+                Text("Ver Saldo")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                    .padding(.horizontal)
+            }
+
+          
+            if mostrarSaldo {
+                Text("Saldo: R$ \(String(format: "%.2f", saldo))")
+                    .font(.title2)
+                    .padding()
+            }
+
+            
+            Button(action: {
+                sairApp = true
+            }) {
+                Text("Sair")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.orange)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                    .padding(.horizontal)
+            }
+            .alert(isPresented: $sairApp) {
+                Alert(
+                    title: Text("Confirmar saída"),
+                    message: Text("Deseja realmente sair do app?"),
+                    primaryButton: .destructive(Text("Sim")) {
+                        exit(0)
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
+
+            Spacer()
+        }
+        .padding()
+        .background(Color.white.edgesIgnoringSafeArea(.all))
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
